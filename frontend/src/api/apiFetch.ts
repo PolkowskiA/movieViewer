@@ -1,3 +1,8 @@
+import {
+  startGlobalLoading,
+  stopGlobalLoading,
+} from "../context/loadingContext/loadingBridge";
+
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 interface ApiFetchOptions<TBody = unknown> {
@@ -21,31 +26,28 @@ export async function apiFetch<TResponse, TBody = unknown>(
   url: string,
   options: ApiFetchOptions<TBody> = {},
 ): Promise<TResponse> {
+  startGlobalLoading();
   const clientId = localStorage.getItem("clientId");
 
-  const response = await fetch(url, {
-    method: options.method ?? "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(clientId ? { "X-Client-Id": clientId } : {}),
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined,
-    signal: options.signal,
-  });
+  try {
+    const response = await fetch(url, {
+      method: options.method ?? "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(clientId
+          ? { "X-Client-Id": localStorage.getItem("clientId")! }
+          : {}),
+      },
+      body: options.body ? JSON.stringify(options.body) : undefined,
+      signal: options.signal,
+    });
 
-  if (!response.ok) {
-    let errorBody: unknown = null;
+    if (!response.ok) {
+      throw new ApiError(`API error: ${response.status}`, response.status);
+    }
 
-    try {
-      errorBody = await response.json();
-    } catch {}
-
-    throw new ApiError(
-      `API error: ${response.status}`,
-      response.status,
-      errorBody,
-    );
+    return (await response.json()) as TResponse;
+  } finally {
+    stopGlobalLoading();
   }
-
-  return (await response.json()) as TResponse;
 }
