@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TmdbApi.Persistence;
 
@@ -10,9 +11,11 @@ using TmdbApi.Persistence;
 namespace TmdbApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260119230540_AddMovieReview")]
+    partial class AddMovieReview
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.23");
@@ -46,7 +49,8 @@ namespace TmdbApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<Guid>("ClientId")
+                    b.Property<string>("ClientId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("MovieId")
@@ -63,7 +67,10 @@ namespace TmdbApi.Migrations
                     b.HasIndex("ClientId", "MovieId")
                         .IsUnique();
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", t =>
+                        {
+                            t.HasCheckConstraint("CK_MovieReview_Rating", "Rating IS NULL OR (Rating >= 0 AND Rating <= 10)");
+                        });
                 });
 #pragma warning restore 612, 618
         }

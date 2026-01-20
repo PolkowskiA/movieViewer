@@ -43,5 +43,6 @@ app.UseCors();
 ClientEndpoints.Map(app);
 MovieEndpoints.Map(app);
 FavoriteEndpoints.Map(app);
+ReviewEndpoints.Map(app);
 
 app.Run();

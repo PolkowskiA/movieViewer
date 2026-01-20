@@ -1,18 +1,19 @@
 ﻿namespace TmdbApi.DTO
 {
     public record MovieDeatilsDto(
-    int Id,
-    string Title,
-    string OriginalTitle,
-    string ReleaseDate,
-    string? Overview,
-    string? PosterPath,
-    string? BackdropPath,
-    double VoteAverage,
-    int VoteCount,
-    GenreDto[] Genres,
-    CrewMemberDto? Director,
-    CrewMemberDto[]? Writers);
+        int Id,
+        string Title,
+        string OriginalTitle,
+        string ReleaseDate,
+        string? Overview,
+        string? PosterPath,
+        string? BackdropPath,
+        double VoteAverage,
+        int VoteCount,
+        GenreDto[] Genres,
+        CrewMemberDto? Director,
+        CrewMemberDto[]? Writers       
+    );
 
     public record GenreDto(
         int Id,
@@ -27,5 +28,10 @@
         int? Id,
         string? Name,
         string? Job
+    );
+
+    public record MovieReviewDto(
+        int? Rating,
+        string? ReviewText
     );
 }
