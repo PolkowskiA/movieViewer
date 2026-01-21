@@ -6,16 +6,16 @@ namespace TmdbApi.Infrastructure
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddTmdbClient(this IServiceCollection services)
+        public static IServiceCollection AddTmdbClient(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<TmdbOptions>(services
-                .BuildServiceProvider()
-                .GetRequiredService<IConfiguration>()
-                .GetSection("Tmdb"));
+            services.Configure<TmdbOptions>(
+                configuration.GetSection("Tmdb"));
 
             services.AddHttpClient<TmdbClient>((serviceProvider, client) =>
             {
-                var options = serviceProvider.GetRequiredService<IOptions<TmdbOptions>>().Value;
+                var options = serviceProvider
+                    .GetRequiredService<IOptions<TmdbOptions>>()
+                    .Value;
 
                 client.BaseAddress = new Uri("https://api.themoviedb.org/3/");
                 client.DefaultRequestHeaders.Accept.Add(
