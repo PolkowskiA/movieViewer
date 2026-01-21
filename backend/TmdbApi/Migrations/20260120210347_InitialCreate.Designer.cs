@@ -11,8 +11,8 @@ using TmdbApi.Persistence;
 namespace TmdbApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260119230540_AddMovieReview")]
-    partial class AddMovieReview
+    [Migration("20260120210347_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,35 +22,23 @@ namespace TmdbApi.Migrations
 
             modelBuilder.Entity("TmdbApi.Persistence.FavoriteMovie", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
                     b.Property<Guid>("ClientId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("MovieId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
 
-                    b.HasIndex("ClientId", "MovieId")
-                        .IsUnique();
+                    b.HasKey("ClientId", "MovieId");
 
                     b.ToTable("Favorites");
                 });
 
             modelBuilder.Entity("TmdbApi.Persistence.MovieReview", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ClientId")
-                        .IsRequired()
+                    b.Property<Guid>("ClientId")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("MovieId")
@@ -62,15 +50,25 @@ namespace TmdbApi.Migrations
                     b.Property<string>("ReviewText")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.HasKey("ClientId", "MovieId");
 
-                    b.HasIndex("ClientId", "MovieId")
-                        .IsUnique();
+                    b.ToTable("Reviews");
+                });
 
-                    b.ToTable("Reviews", t =>
-                        {
-                            t.HasCheckConstraint("CK_MovieReview_Rating", "Rating IS NULL OR (Rating >= 0 AND Rating <= 10)");
-                        });
+            modelBuilder.Entity("TmdbApi.Persistence.MovieReview", b =>
+                {
+                    b.HasOne("TmdbApi.Persistence.FavoriteMovie", "Favorite")
+                        .WithOne("Review")
+                        .HasForeignKey("TmdbApi.Persistence.MovieReview", "ClientId", "MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Favorite");
+                });
+
+            modelBuilder.Entity("TmdbApi.Persistence.FavoriteMovie", b =>
+                {
+                    b.Navigation("Review");
                 });
 #pragma warning restore 612, 618
         }

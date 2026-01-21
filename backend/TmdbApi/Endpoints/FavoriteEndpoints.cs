@@ -35,8 +35,7 @@ namespace TmdbApi.Endpoints
                        .ToDictionaryAsync(
                            r => r.MovieId,
                            r => new MovieReviewDto(
-                               r.Rating,
-                               r.ReviewText
+                               r.Rating
                            )
                        );
 

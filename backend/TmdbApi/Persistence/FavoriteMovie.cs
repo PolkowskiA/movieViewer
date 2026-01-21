@@ -4,8 +4,6 @@ namespace TmdbApi.Persistence
 {
     public class FavoriteMovie
     {
-        public int Id { get; set; }
-
         [Required]
         public Guid ClientId { get; set; }
 
@@ -13,5 +11,7 @@ namespace TmdbApi.Persistence
         public int MovieId { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public MovieReview? Review { get; set; }
     }
 }

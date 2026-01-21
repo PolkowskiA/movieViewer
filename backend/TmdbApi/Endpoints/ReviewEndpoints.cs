@@ -24,7 +24,6 @@ namespace TmdbApi.Endpoints
                 if (existing != null)
                 {
                     existing.Rating = body.Rating;
-                    existing.ReviewText = body.ReviewText;
                 }
                 else
                 {
@@ -33,7 +32,6 @@ namespace TmdbApi.Endpoints
                         ClientId = clientId,
                         MovieId = body.MovieId,
                         Rating = body.Rating,
-                        ReviewText = body.ReviewText
                     };
                     db.Reviews.Add(review);
                 }
@@ -42,6 +40,23 @@ namespace TmdbApi.Endpoints
 
                 return Results.Ok(new { body.MovieId, body.Rating, body.ReviewText });
             });
+
+            group.MapDelete("/{movieId:int}",
+                async (int movieId, HttpContext http, [FromServices] AppDbContext db) =>
+                {
+                    var clientId = (Guid)http.Items["ClientId"]!;
+
+                    var review = await db.Reviews.FirstOrDefaultAsync(r => r.MovieId == movieId && r.ClientId == clientId);
+
+                    if (review is null)
+                        return Results.NoContent();
+
+                    db.Reviews.Remove(review);
+
+                    await db.SaveChangesAsync();
+
+                    return Results.NoContent();
+                });
         }
     }
 }

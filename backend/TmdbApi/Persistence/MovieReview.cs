@@ -4,9 +4,6 @@ namespace TmdbApi.Persistence
 {
     public class MovieReview
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         public Guid ClientId { get; set; }
 
@@ -16,6 +13,6 @@ namespace TmdbApi.Persistence
         [Range(0, 10)]
         public int? Rating { get; set; }
 
-        public string? ReviewText { get; set; }
+        public FavoriteMovie Favorite { get; set; } = null!;
     }
 }

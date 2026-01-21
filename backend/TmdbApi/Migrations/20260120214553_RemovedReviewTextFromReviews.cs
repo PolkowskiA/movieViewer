@@ -5,23 +5,24 @@
 namespace TmdbApi.Migrations
 {
     /// <inheritdoc />
-    public partial class ChangedMovieReviewClientIdType : Migration
+    public partial class RemovedReviewTextFromReviews : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropCheckConstraint(
-                name: "CK_MovieReview_Rating",
+            migrationBuilder.DropColumn(
+                name: "ReviewText",
                 table: "Reviews");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddCheckConstraint(
-                name: "CK_MovieReview_Rating",
+            migrationBuilder.AddColumn<string>(
+                name: "ReviewText",
                 table: "Reviews",
-                sql: "Rating IS NULL OR (Rating >= 0 AND Rating <= 10)");
+                type: "TEXT",
+                nullable: true);
         }
     }
 }

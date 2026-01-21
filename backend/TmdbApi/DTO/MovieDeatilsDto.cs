@@ -12,7 +12,7 @@
         int VoteCount,
         GenreDto[] Genres,
         CrewMemberDto? Director,
-        CrewMemberDto[]? Writers       
+        CrewMemberDto[]? Writers
     );
 
     public record GenreDto(
@@ -31,7 +31,6 @@
     );
 
     public record MovieReviewDto(
-        int? Rating,
-        string? ReviewText
+        int? Rating
     );
 }

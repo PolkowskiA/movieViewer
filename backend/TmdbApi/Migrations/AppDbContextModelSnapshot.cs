@@ -19,33 +19,22 @@ namespace TmdbApi.Migrations
 
             modelBuilder.Entity("TmdbApi.Persistence.FavoriteMovie", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
                     b.Property<Guid>("ClientId")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("MovieId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
 
-                    b.HasIndex("ClientId", "MovieId")
-                        .IsUnique();
+                    b.HasKey("ClientId", "MovieId");
 
                     b.ToTable("Favorites");
                 });
 
             modelBuilder.Entity("TmdbApi.Persistence.MovieReview", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
                     b.Property<Guid>("ClientId")
                         .HasColumnType("TEXT");
 
@@ -55,15 +44,25 @@ namespace TmdbApi.Migrations
                     b.Property<int?>("Rating")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("ReviewText")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ClientId", "MovieId")
-                        .IsUnique();
+                    b.HasKey("ClientId", "MovieId");
 
                     b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("TmdbApi.Persistence.MovieReview", b =>
+                {
+                    b.HasOne("TmdbApi.Persistence.FavoriteMovie", "Favorite")
+                        .WithOne("Review")
+                        .HasForeignKey("TmdbApi.Persistence.MovieReview", "ClientId", "MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Favorite");
+                });
+
+            modelBuilder.Entity("TmdbApi.Persistence.FavoriteMovie", b =>
+                {
+                    b.Navigation("Review");
                 });
 #pragma warning restore 612, 618
         }
