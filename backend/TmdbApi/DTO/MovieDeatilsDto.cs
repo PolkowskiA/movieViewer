@@ -29,8 +29,4 @@
         string? Name,
         string? Job
     );
-
-    public record MovieReviewDto(
-        int? Rating
-    );
 }

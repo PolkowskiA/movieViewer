@@ -1,7 +1,7 @@
 ﻿namespace TmdbApi.Persistence
 {
     using Microsoft.EntityFrameworkCore;
-    using System.Collections.Generic;
+    using TmdbApi.Domain;
 
     public class AppDbContext : DbContext
     {
@@ -18,8 +18,16 @@
             modelBuilder.Entity<FavoriteMovie>()
                 .HasKey(f => new { f.ClientId, f.MovieId });
 
+            modelBuilder.Entity<FavoriteMovie>()
+                .Property(f => f.ClientId)
+                .HasColumnType("uuid");
+
             modelBuilder.Entity<MovieReview>()
                 .HasKey(r => new { r.ClientId, r.MovieId });
+
+            modelBuilder.Entity<MovieReview>()
+                .Property(r => r.ClientId)
+                .HasColumnType("uuid");
 
             modelBuilder.Entity<FavoriteMovie>()
                 .HasOne(f => f.Review)

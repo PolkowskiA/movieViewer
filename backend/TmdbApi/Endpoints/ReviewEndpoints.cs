@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TmdbApi.Contracts;
+using TmdbApi.Domain;
+using TmdbApi.DTO;
 using TmdbApi.Infrastructure.Filters;
 using TmdbApi.Persistence;
 using static System.Net.WebRequestMethods;
@@ -40,6 +42,16 @@ namespace TmdbApi.Endpoints
 
                 return Results.Ok(new { body.MovieId, body.Rating, body.ReviewText });
             });
+
+            group.MapGet("/{movieId:int}",
+                async (int movieId, HttpContext http, [FromServices] AppDbContext db) =>
+                {
+                    var clientId = (Guid)http.Items["ClientId"]!;
+
+                    var review = await db.Reviews.FirstOrDefaultAsync(r => r.ClientId == clientId && r.MovieId == movieId);
+
+                    return Results.Ok(new MovieReviewDto(review?.Rating));
+                });
 
             group.MapDelete("/{movieId:int}",
                 async (int movieId, HttpContext http, [FromServices] AppDbContext db) =>

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TmdbApi.Persistence
+namespace TmdbApi.Domain
 {
-    public class MovieReview
+    public class FavoriteMovie
     {
         [Required]
         public Guid ClientId { get; set; }
@@ -10,9 +10,8 @@ namespace TmdbApi.Persistence
         [Required]
         public int MovieId { get; set; }
 
-        [Range(0, 10)]
-        public int? Rating { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public FavoriteMovie Favorite { get; set; } = null!;
+        public MovieReview? Review { get; set; }
     }
 }
