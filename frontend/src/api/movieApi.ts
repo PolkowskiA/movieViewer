@@ -1,4 +1,5 @@
 import type { MovieDetails } from "../types/MovieDetails";
+import type { SearchMovie } from "../types/SearchMovie";
 import { apiFetch } from "./apiFetch";
 
 export async function getMovieDetails(movieId: number) {
@@ -23,14 +24,11 @@ export async function getFavorites() {
   }
 }
 
-import type { SearchMovie } from "../SearchMovie";
-import { normalizeString } from "../utils";
-
 export async function searchMovies(query: string) {
-  const normalized = normalizeString(query);
+  const normalized = encodeURIComponent(query);
 
   return await apiFetch<SearchMovie[]>(
-    `/api/movies/search?query=${encodeURIComponent(normalized)}`,
+    `/api/movies/search?query=${normalized}`,
   );
 }
 
@@ -61,4 +59,8 @@ export function deleteReview(movieId: number) {
   return apiFetch(`/api/reviews/${movieId}`, {
     method: "DELETE",
   });
+}
+
+export function getReview(movieId: number) {
+  return apiFetch<{ rating: number | null }>(`/api/reviews/${movieId}`);
 }
