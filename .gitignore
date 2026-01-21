@@ -51,6 +51,15 @@ nunit-*.xml
 *.userosscache
 *.sln.docstates
 
+# SQLite
+*.db*
+
+publish/
+publish.log
+*.log
+
+appsettings.Development.json
+
 ####################################
 # Visual Studio
 ####################################
