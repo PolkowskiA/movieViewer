@@ -18,7 +18,7 @@ export default function useSearchMovie() {
       }, 400);
     } catch (error) {
       console.error(error);
-      return [];
+      setResults([]);
     }
   }
 
