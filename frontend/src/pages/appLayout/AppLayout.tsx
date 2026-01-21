@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 import movieIcon from "../../assets/movie.svg";
 import { SpinnerOverlay } from "../../components/SpinnerOverlay";
-import { useLoading } from "../../context/loadingContext/LoadingContext";
+import { useLoading } from "../../context/loadingContext/useLoading";
 import useInitClient from "../../hooks/useGetClientId";
 import "./AppLayout.css";
 import MovieSearch from "./MovieSearch";

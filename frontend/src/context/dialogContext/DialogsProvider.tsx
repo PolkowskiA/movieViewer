@@ -1,23 +1,20 @@
 import { useMemo, useState, type FC, type PropsWithChildren } from "react";
-import type { TmdbMovie } from "../../types";
-import type { MovieDetails } from "../../types/tmdbMovieDetails";
+import type { MovieDetails } from "../../types/MovieDetails";
 import { DialogsContext } from "./DialogsContext";
 import type { DialogType } from "./types";
 
 export const DialogsProvider: FC<PropsWithChildren> = ({ children }) => {
   const [activeDialog, setActiveDialog] = useState<DialogType>(null);
-  const [selectedItem, setSelectedItem] = useState<
-    MovieDetails | TmdbMovie | null
-  >(null);
+  const [selectedItem, setSelectedItem] = useState<MovieDetails | null>(null);
+  const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
 
-  const openAdd = () => {
-    setSelectedItem(null);
-    setActiveDialog("add");
-  };
-
-  const openEdit = (item: MovieDetails) => {
-    setSelectedItem(item);
-    setActiveDialog("edit");
+  const openDetails = (item: MovieDetails | number) => {
+    if (typeof item === "number") {
+      setSelectedMovieId(item);
+    } else {
+      setSelectedItem(item);
+    }
+    setActiveDialog("details");
   };
 
   const openDelete = (item: MovieDetails) => {
@@ -25,35 +22,28 @@ export const DialogsProvider: FC<PropsWithChildren> = ({ children }) => {
     setActiveDialog("delete");
   };
 
-  const openDetails = (item: MovieDetails | TmdbMovie) => {
+  const openEdit = (item: MovieDetails) => {
     setSelectedItem(item);
-    setActiveDialog("details");
+    setActiveDialog("edit");
   };
 
   const close = () => {
     setActiveDialog(null);
     setSelectedItem(null);
+    setSelectedMovieId(null);
   };
 
   const value = useMemo(() => {
     return {
       activeDialog,
       selectedItem,
-      openAdd,
+      selectedMovieId,
       openEdit,
       openDelete,
       openDetails,
       close,
     };
-  }, [
-    activeDialog,
-    selectedItem,
-    openAdd,
-    openEdit,
-    openDelete,
-    openDetails,
-    close,
-  ]);
+  }, [activeDialog, selectedItem, selectedMovieId]);
 
   return (
     <DialogsContext.Provider value={value}>{children}</DialogsContext.Provider>

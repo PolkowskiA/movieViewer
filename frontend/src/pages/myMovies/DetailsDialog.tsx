@@ -1,66 +1,75 @@
 import { useEffect, useState } from "react";
-import { getMovieDetails } from "../../api/movieApi";
+import {
+  addFavorite,
+  addReview,
+  deleteReview,
+  getMovieDetails,
+} from "../../api/movieApi";
 import { useDialogsContext } from "../../context/dialogContext/useDialogsContext";
-import type { MovieDetails } from "../../types/tmdbMovieDetails";
+import type { MovieDetails } from "../../types/MovieDetails";
 import Dialog from "./Dialog";
 import Rating from "./Rating";
+import { MyRating } from "./StarRating";
 
 export default function DetailsDialog({
-  onAdd,
+  refresh,
 }: Readonly<{
-  onAdd: (item: MovieDetails) => void;
+  refresh: () => void;
 }>) {
-  const { activeDialog, close, selectedItem } = useDialogsContext();
+  const { activeDialog, close, selectedItem, selectedMovieId } =
+    useDialogsContext();
   const isEditMode = activeDialog === "edit";
   const open = activeDialog === "details" || isEditMode;
-  const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
+  const [fetchedMovieDetails, setFetchedMovieDetails] =
+    useState<MovieDetails | null>(null);
+  const [optimisticVote, setOptimisticVote] = useState<number | null>(null);
+
+  const movieDetails = isEditMode ? selectedItem : fetchedMovieDetails;
+
+  const vote = optimisticVote ?? movieDetails?.review?.rating ?? null;
 
   const title = (
     <span>
       {movieDetails?.title}
-      {movieDetails?.release_date && (
+      {movieDetails?.releaseDate && (
         <span className="text-gray-400">
-          {` (${new Date(movieDetails.release_date).getFullYear()})`}
+          {` (${new Date(movieDetails.releaseDate).getFullYear()})`}
         </span>
       )}
     </span>
   );
 
-  useEffect(() => {
-    if (selectedItem?.id && open) {
-      getMovieDetails(selectedItem.id).then((res) => setMovieDetails(res));
-    } else {
-      setMovieDetails(null);
-    }
-  }, [selectedItem, open]);
-
   function handleClose() {
     close();
   }
 
-  function handleAdd() {
-    const data = localStorage.getItem("movies");
-
-    let parsedData = data ? (JSON.parse(data) as MovieDetails[]) : [];
-
-    localStorage.setItem(
-      "movies",
-      JSON.stringify([...parsedData, movieDetails]),
-    );
-    onAdd(movieDetails!);
+  async function handleAdd() {
+    if (!movieDetails?.id) return;
+    await addFavorite(movieDetails.id);
     close();
+    refresh();
   }
 
-  function getCrew() {
-    const director = movieDetails?.credits?.crew?.find(
-      (x) => x.job === "Director" && x.name,
-    )?.name;
+  async function handleVoteChange(value: number | null) {
+    const movieId = selectedMovieId || selectedItem?.id;
+    if (!movieId) return;
 
-    const writers = movieDetails?.credits?.crew?.filter(
-      (x) => x.job === "Writer" && x.name,
-    );
-    return { director, writers };
+    setOptimisticVote(value);
+
+    if (value === null) {
+      await deleteReview(movieId);
+    } else {
+      await addReview(value, movieId);
+    }
+
+    if (isEditMode) refresh();
   }
+
+  useEffect(() => {
+    if (!open || isEditMode || !selectedMovieId) return;
+
+    getMovieDetails(selectedMovieId).then(setFetchedMovieDetails);
+  }, [open, isEditMode, selectedMovieId]);
 
   return (
     <Dialog
@@ -72,20 +81,20 @@ export default function DetailsDialog({
       {movieDetails && (
         <div className="flex h-full flex-col gap-y-2 p-2">
           <div className="flex w-full">
-            {movieDetails?.backdrop_path ? (
+            {movieDetails?.backdropPath ? (
               <img
-                src={`https://media.themoviedb.org/t/p/w300${movieDetails?.poster_path}`}
+                src={`https://media.themoviedb.org/t/p/w300${movieDetails?.posterPath}`}
                 alt={movieDetails?.title}
                 className="h-33 w-23 rounded-md md:h-112.5 md:w-75"
               />
             ) : (
               <div className="h-33 w-23 rounded-md bg-gray-700 md:h-112.5 md:w-75" />
             )}
-            <div className="flex flex-col flex-wrap pl-3">
+            <div className="flex w-full flex-col flex-wrap pl-3">
               <div>
                 <Rating
-                  vote_average={movieDetails.vote_average}
-                  vote_count={movieDetails.vote_count}
+                  voteAverage={movieDetails.voteAverage}
+                  voteCount={movieDetails.voteCount}
                 />
                 <div className="flex flex-wrap gap-1">
                   {movieDetails.genres.map((genre) => (
@@ -98,16 +107,20 @@ export default function DetailsDialog({
                   ))}
                 </div>
               </div>
-              <div className="flex flex-col flex-wrap gap-3 p-2">
-                <hr />
-                <div className="flex gap-x-4">
-                  <span className="text-center">Reżyseria</span>
-                  <span className="font-bold underline">
-                    {getCrew().director}
-                  </span>
-                </div>
-                <hr />
-                {getCrew().writers?.map((w) => (
+              <div className="flex flex-col flex-wrap gap-3">
+                {movieDetails.director?.name && (
+                  <>
+                    <hr />
+                    <div className="flex gap-x-4">
+                      <span className="text-center">Reżyseria</span>
+                      <span className="font-bold underline">
+                        {movieDetails.director?.name}
+                      </span>
+                    </div>
+                    <hr />
+                  </>
+                )}
+                {movieDetails.writers?.map((w) => (
                   <>
                     <div key={w.id} className="flex gap-x-4">
                       <span className="text-center">Scenariusz</span>
@@ -117,6 +130,9 @@ export default function DetailsDialog({
                   </>
                 ))}
               </div>
+              {isEditMode && (
+                <MyRating vote={vote} onChange={handleVoteChange} />
+              )}
             </div>
           </div>
           <p className="pt-4 text-justify">{movieDetails.overview}</p>
@@ -125,7 +141,7 @@ export default function DetailsDialog({
             onClick={handleAdd}
             hidden={isEditMode}
           >
-            Dodaj film
+            Dodaj do kolekcji
           </button>
         </div>
       )}

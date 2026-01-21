@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { registerLoadingHandlers } from "./loadingBridge";
-import { LoadingProvider, useLoading } from "./LoadingContext";
+import { LoadingProvider } from "./LoadingProvider";
+import { useLoading } from "./useLoading";
 
 function Bridge() {
   const { startLoading, stopLoading } = useLoading();

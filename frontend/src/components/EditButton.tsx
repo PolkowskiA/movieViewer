@@ -1,21 +1,12 @@
-type EditButtonProps = {
-  onClick?: () => void;
-};
+import type { ButtonProps } from "../types/common";
 
-export function EditButton({ onClick }: Readonly<EditButtonProps>) {
+export function EditButton({ onClick }: Readonly<ButtonProps>) {
   return (
     <button
       onClick={onClick}
-      className="group inline-flex items-center gap-2 cursor-pointer"
+      className="group inline-flex cursor-pointer items-center gap-2"
     >
-      <span
-        className="
-          flex h-6 w-6 items-center justify-center
-          rounded-full bg-gray-300
-          transition-colors
-          group-hover:bg-blue-700
-        "
-      >
+      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 transition-colors group-hover:bg-blue-700">
         <svg
           className="h-4 w-4 text-gray-800 transition-colors group-hover:text-gray-300"
           fill="currentColor"

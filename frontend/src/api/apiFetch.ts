@@ -22,6 +22,8 @@ export class ApiError extends Error {
   }
 }
 
+const API_BASE = import.meta.env.VITE_API_URL ?? "";
+
 export async function apiFetch<TResponse, TBody = unknown>(
   url: string,
   options: ApiFetchOptions<TBody> = {},
@@ -30,23 +32,30 @@ export async function apiFetch<TResponse, TBody = unknown>(
   const clientId = localStorage.getItem("clientId");
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(`${API_BASE}${url}`, {
       method: options.method ?? "GET",
       headers: {
         "Content-Type": "application/json",
-        ...(clientId
-          ? { "X-Client-Id": localStorage.getItem("clientId")! }
-          : {}),
+        ...(clientId ? { "X-Client-Id": clientId } : {}),
       },
       body: options.body ? JSON.stringify(options.body) : undefined,
       signal: options.signal,
     });
 
     if (!response.ok) {
-      throw new ApiError(`API error: ${response.status}`, response.status);
+      const errorBody = await response.json();
+
+      throw new ApiError(
+        `API error: ${response.status}`,
+        response.status,
+        errorBody,
+      );
     }
 
-    return (await response.json()) as TResponse;
+    const contentType = response.headers.get("Content-Type") ?? "";
+    if (contentType.includes("application/json")) {
+      return (await response.json()) as TResponse;
+    } else return null as TResponse;
   } finally {
     stopGlobalLoading();
   }
