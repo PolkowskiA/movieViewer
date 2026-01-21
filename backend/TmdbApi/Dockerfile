@@ -1,11 +1,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 WORKDIR /src
 
-COPY *.csproj ./
-RUN dotnet restore
+COPY src/TmdbApi/TmdbApi.csproj src/TmdbApi/
+RUN dotnet restore src/TmdbApi/TmdbApi.csproj
 
 COPY . .
-RUN dotnet publish -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish src/TmdbApi/TmdbApi.csproj \
+    -c Release \
+    -o /app/publish \
+    /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
 WORKDIR /app
