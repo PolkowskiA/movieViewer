@@ -1,15 +1,14 @@
-import type { TmdbMovie } from "../../types";
-import type { MovieDetails } from "../../types/tmdbMovieDetails";
+import type { MovieDetails } from "../../types/MovieDetails";
 
-export type DialogType = "add" | "edit" | "delete" | "details" | null;
+export type DialogType = "edit" | "delete" | "details" | null;
 
 export interface DialogContextState {
   activeDialog: DialogType;
-  selectedItem: MovieDetails | TmdbMovie | null;
+  selectedItem: MovieDetails | null;
+  selectedMovieId: number | null;
 
-  openAdd: () => void;
   openEdit: (item: MovieDetails) => void;
   openDelete: (item: MovieDetails) => void;
-  openDetails: (item: TmdbMovie | MovieDetails) => void;
+  openDetails: (item: MovieDetails | number) => void;
   close: () => void;
 }

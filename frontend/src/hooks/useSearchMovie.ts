@@ -1,10 +1,9 @@
 import { useRef, useState } from "react";
 import { searchMovies } from "../api/movieApi";
-import type { TmdbMovie } from "../types";
-import type { TmdbResponse } from "../types/tmdbSearch";
+import type { SearchMovie } from "../SearchMovie";
 
 export default function useSearchMovie() {
-  const [results, setResults] = useState<TmdbMovie[]>([]);
+  const [results, setResults] = useState<SearchMovie[]>([]);
   const timeout = useRef(0);
 
   async function searchMoviesByName(inputMovieName: string) {
@@ -12,8 +11,8 @@ export default function useSearchMovie() {
       clearTimeout(timeout.current);
       timeout.current = setTimeout(async () => {
         searchMovies(inputMovieName)
-          .then((res: TmdbResponse) => {
-            setResults(res.results);
+          .then((res: SearchMovie[]) => {
+            setResults(res);
           })
           .catch((err) => console.error(err));
       }, 400);

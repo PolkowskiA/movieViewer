@@ -1,24 +1,24 @@
-import star from "../../assets/star.svg";
-import type { MovieDetails } from "../../types/tmdbMovieDetails";
+import StarIcon from "../../components/icons/StarIcon";
+import type { MovieDetails } from "../../types/MovieDetails";
 
 export default function Rating({
-  vote_average,
-  vote_count,
-}: Readonly<Pick<MovieDetails, "vote_average" | "vote_count">>) {
+  voteAverage,
+  voteCount,
+}: Readonly<Pick<MovieDetails, "voteAverage" | "voteCount">>) {
   function getVoteCount() {
-    if (vote_count >= 10000) {
-      return `${(vote_count / 1000).toFixed()}k`;
-    } else if (vote_count > 1000) {
-      return `${(vote_count / 1000).toFixed(1)}k`;
-    } else return vote_count;
+    if (voteCount >= 10000) {
+      return `${(voteCount / 1000).toFixed()}k`;
+    } else if (voteCount > 1000) {
+      return `${(voteCount / 1000).toFixed(1)}k`;
+    } else return voteCount;
   }
   return (
     <div className="float-left mx-2 flex items-center rounded-br-lg border-r border-b border-gray-500 pr-1">
-      <img alt="ranking" src={star} className="w-10" />
+      <StarIcon width={40} />
       <div className="ml-2 flex flex-col text-gray-500">
         <div>
           <span className="font-bold text-gray-200">
-            {vote_average?.toFixed(1)}
+            {voteAverage?.toFixed(1)}
           </span>
           <span className="hidden md:inline-block">/10</span>
         </div>

@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import DeleteIcon from "../../components/icons/DeleteIcon";
-import type { DialogProps } from "../../types";
+import type { DialogProps } from "../../types/common";
 
 export default function Dialog({
   isOpen,

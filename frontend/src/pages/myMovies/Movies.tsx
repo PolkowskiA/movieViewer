@@ -1,31 +1,27 @@
 import { useEffect, useState } from "react";
 import { getFavorites } from "../../api/movieApi";
-import type { MovieDetails } from "../../types/tmdbMovieDetails";
+import type { MovieDetails } from "../../types/MovieDetails";
 import DeleteDialog from "./DeleteDialog";
 import DetailsDialog from "./DetailsDialog";
 import MovieTile from "./MovieTile";
 
 export default function Movies() {
-  const [films, setFilms] = useState<MovieDetails[]>([]);
+  const [movies, setMovies] = useState<MovieDetails[]>([]);
 
-  function handleDelete(id: number) {
-    setFilms((prev) => prev.filter((f) => f.id !== id));
-  }
-
-  function handleAdd(item: MovieDetails) {
-    setFilms((prev) => [...prev, item]);
+  async function fetchAndSetMovies() {
+    await getFavorites().then((r) => setMovies(r));
   }
 
   useEffect(() => {
-    getFavorites();
+    fetchAndSetMovies();
   }, []);
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <DeleteDialog onDeleted={handleDelete} />
-      <DetailsDialog onAdd={handleAdd} />
-      {films.map((film) => (
-        <MovieTile film={film} key={film.id} />
+      <DeleteDialog refresh={fetchAndSetMovies} />
+      <DetailsDialog refresh={fetchAndSetMovies} />
+      {movies.map((m) => (
+        <MovieTile movie={m} key={m.id} />
       ))}
     </div>
   );

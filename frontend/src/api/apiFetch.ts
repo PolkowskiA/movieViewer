@@ -17,13 +17,15 @@ export class ApiError extends Error {
   }
 }
 
+const API_BASE = import.meta.env.VITE_API_URL ?? "";
+
 export async function apiFetch<TResponse, TBody = unknown>(
   url: string,
   options: ApiFetchOptions<TBody> = {},
 ): Promise<TResponse> {
   const clientId = localStorage.getItem("clientId");
 
-  const response = await fetch(url, {
+  const response = await fetch(`${API_BASE}${url}`, {
     method: options.method ?? "GET",
     headers: {
       "Content-Type": "application/json",
@@ -36,9 +38,7 @@ export async function apiFetch<TResponse, TBody = unknown>(
   if (!response.ok) {
     let errorBody: unknown = null;
 
-    try {
-      errorBody = await response.json();
-    } catch {}
+    errorBody = await response.json();
 
     throw new ApiError(
       `API error: ${response.status}`,
@@ -47,5 +47,8 @@ export async function apiFetch<TResponse, TBody = unknown>(
     );
   }
 
-  return (await response.json()) as TResponse;
+  const contentType = response.headers.get("Content-Type") ?? "";
+  if (contentType.includes("application/json")) {
+    return (await response.json()) as TResponse;
+  } else return null as TResponse;
 }
