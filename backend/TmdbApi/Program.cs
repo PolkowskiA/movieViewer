@@ -14,6 +14,9 @@ builder.Services.AddSwaggerGen();
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL")
     ?? throw new InvalidOperationException("DATABASE_URL not set");
 
+Console.WriteLine($"RAW DATABASE_URL: [{databaseUrl}]");
+Console.WriteLine($"FIRST CHAR CODE: {(int)databaseUrl[0]}");
+
 var connectionString = new NpgsqlConnectionStringBuilder(databaseUrl)
 {
     SslMode = SslMode.Require
