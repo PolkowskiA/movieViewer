@@ -51,6 +51,15 @@ nunit-*.xml
 *.userosscache
 *.sln.docstates
 
+# SQLite
+*.db*
+
+publish/
+publish.log
+*.log
+
+appsettings.Development.json
+
 ####################################
 # Visual Studio
 ####################################
@@ -127,7 +136,6 @@ out/
 .DS_Store?
 Thumbs.db
 ehthumbs.db
-Icon?
 
 ####################################
 # Docker (optional)
