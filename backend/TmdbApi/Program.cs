@@ -11,12 +11,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL")
-    ?? throw new InvalidOperationException("DATABASE_URL not set");
+var raw = builder.Configuration.GetConnectionString("DefaultConnection");
+
+Console.WriteLine($"FIRST CHAR CODE: {(int)raw[0]}");
+
+var csb = new Npgsql.NpgsqlConnectionStringBuilder(raw);
+Console.WriteLine($"RAW DefaultConnection: [{csb}]");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(databaseUrl)
-);
+    options.UseNpgsql(csb.ConnectionString));
 
 builder.Services
     .AddAppCors(builder.Configuration)
