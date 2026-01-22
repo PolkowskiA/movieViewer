@@ -11,15 +11,25 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var raw = builder.Configuration.GetConnectionString("DefaultConnection");
+var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 
-Console.WriteLine($"FIRST CHAR CODE: {(int)raw[0]}");
+if (cs?.StartsWith("postgres", StringComparison.OrdinalIgnoreCase) == true)
+{
+    var uri = new Uri(cs);
+    var userInfo = uri.UserInfo.Split(':', 2);
 
-var csb = new Npgsql.NpgsqlConnectionStringBuilder(raw);
-Console.WriteLine($"RAW DefaultConnection: [{csb}]");
+    cs =
+        $"Host={uri.Host};" +
+        $"Port={uri.Port};" +
+        $"Database={uri.AbsolutePath.TrimStart('/')};" +
+        $"Username={userInfo[0]};" +
+        $"Password={userInfo[1]}";
+}
+
+Console.WriteLine($"FIRST CHAR CODE: {(int)cs[0]}");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(csb.ConnectionString));
+    options.UseNpgsql(cs));
 
 builder.Services
     .AddAppCors(builder.Configuration)
