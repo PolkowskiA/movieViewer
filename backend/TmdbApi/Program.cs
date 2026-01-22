@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using System.Net.Http.Headers;
 using TmdbApi.Endpoints;
 using TmdbApi.Infrastructure;
@@ -10,9 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite(
-        builder.Configuration.GetConnectionString("Default")));
+    options.UseNpgsql(cs));
 
 builder.Services
     .AddAppCors(builder.Configuration)

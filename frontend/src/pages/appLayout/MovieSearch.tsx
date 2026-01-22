@@ -1,7 +1,8 @@
 import { useEffect, useId, useRef, useState, type ChangeEvent } from "react";
+import { getMovieDetails } from "../../api/movieApi";
 import { useDialogsContext } from "../../context/dialogContext/useDialogsContext";
 import useSearchMovie from "../../hooks/useSearchMovie";
-import type { SearchMovie } from "../../SearchMovie";
+import type { SearchMovie } from "../../types/SearchMovie";
 
 export default function MovieSearch() {
   const inputId = useId();
@@ -25,8 +26,8 @@ export default function MovieSearch() {
     setIsOpen(true);
   }
 
-  function handleSelect(movie: SearchMovie) {
-    openDetails(movie.id);
+  async function handleSelect(movie: SearchMovie) {
+    await getMovieDetails(movie.id).then((res) => openDetails(res));
     setIsOpen(false);
   }
 

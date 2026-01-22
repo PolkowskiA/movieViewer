@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
   addFavorite,
   addReview,
   deleteReview,
-  getMovieDetails,
+  getReview,
 } from "../../api/movieApi";
 import { useDialogsContext } from "../../context/dialogContext/useDialogsContext";
-import type { MovieDetails } from "../../types/MovieDetails";
 import Dialog from "./Dialog";
 import Rating from "./Rating";
 import { MyRating } from "./StarRating";
@@ -16,17 +15,10 @@ export default function DetailsDialog({
 }: Readonly<{
   refresh: () => void;
 }>) {
-  const { activeDialog, close, selectedItem, selectedMovieId } =
-    useDialogsContext();
+  const { activeDialog, close, movieDetails } = useDialogsContext();
   const isEditMode = activeDialog === "edit";
   const open = activeDialog === "details" || isEditMode;
-  const [fetchedMovieDetails, setFetchedMovieDetails] =
-    useState<MovieDetails | null>(null);
-  const [optimisticVote, setOptimisticVote] = useState<number | null>(null);
-
-  const movieDetails = isEditMode ? selectedItem : fetchedMovieDetails;
-
-  const vote = optimisticVote ?? movieDetails?.review?.rating ?? null;
+  const [vote, setVote] = useState<number | null>(null);
 
   const title = (
     <span>
@@ -40,21 +32,20 @@ export default function DetailsDialog({
   );
 
   function handleClose() {
+    setVote(null);
     close();
   }
 
   async function handleAdd() {
     if (!movieDetails?.id) return;
     await addFavorite(movieDetails.id);
-    close();
     refresh();
+    close();
   }
 
   async function handleVoteChange(value: number | null) {
-    const movieId = selectedMovieId || selectedItem?.id;
+    const movieId = movieDetails?.id;
     if (!movieId) return;
-
-    setOptimisticVote(value);
 
     if (value === null) {
       await deleteReview(movieId);
@@ -62,14 +53,17 @@ export default function DetailsDialog({
       await addReview(value, movieId);
     }
 
-    if (isEditMode) refresh();
+    setVote(value);
   }
 
   useEffect(() => {
-    if (!open || isEditMode || !selectedMovieId) return;
+    const movieId = movieDetails?.id;
+    if (!movieId) return;
 
-    getMovieDetails(selectedMovieId).then(setFetchedMovieDetails);
-  }, [open, isEditMode, selectedMovieId]);
+    if (open && isEditMode) {
+      getReview(movieId).then((r) => setVote(r.rating));
+    }
+  }, [open, isEditMode, movieDetails?.id]);
 
   return (
     <Dialog
@@ -81,7 +75,7 @@ export default function DetailsDialog({
       {movieDetails && (
         <div className="flex h-full flex-col gap-y-2 p-2">
           <div className="flex w-full">
-            {movieDetails?.backdropPath ? (
+            {movieDetails?.posterPath ? (
               <img
                 src={`https://media.themoviedb.org/t/p/w300${movieDetails?.posterPath}`}
                 alt={movieDetails?.title}
@@ -121,17 +115,21 @@ export default function DetailsDialog({
                   </>
                 )}
                 {movieDetails.writers?.map((w) => (
-                  <>
-                    <div key={w.id} className="flex gap-x-4">
+                  <Fragment key={w.id}>
+                    <div className="flex gap-x-4">
                       <span className="text-center">Scenariusz</span>
                       <span className="font-bold underline">{w.name}</span>
                     </div>
                     <hr />
-                  </>
+                  </Fragment>
                 ))}
               </div>
               {isEditMode && (
-                <MyRating vote={vote} onChange={handleVoteChange} />
+                <MyRating
+                  key={movieDetails.id}
+                  vote={vote}
+                  onChange={handleVoteChange}
+                />
               )}
             </div>
           </div>

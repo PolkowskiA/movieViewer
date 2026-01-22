@@ -16,7 +16,7 @@ export function EditButton({ onClick }: Readonly<ButtonProps>) {
         </svg>
       </span>
       <span className="text-sm font-medium text-gray-300 select-none">
-        Edytuj
+        Szczegóły
       </span>
     </button>
   );

@@ -15,9 +15,9 @@ namespace TmdbApi.Migrations
                 name: "Favorites",
                 columns: table => new
                 {
-                    ClientId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    MovieId = table.Column<int>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    ClientId = table.Column<Guid>(type: "uuid", nullable: false),
+                    MovieId = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -28,10 +28,9 @@ namespace TmdbApi.Migrations
                 name: "Reviews",
                 columns: table => new
                 {
-                    ClientId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    MovieId = table.Column<int>(type: "INTEGER", nullable: false),
-                    Rating = table.Column<int>(type: "INTEGER", nullable: true),
-                    ReviewText = table.Column<string>(type: "TEXT", nullable: true)
+                    ClientId = table.Column<Guid>(type: "uuid", nullable: false),
+                    MovieId = table.Column<int>(type: "integer", nullable: false),
+                    Rating = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {

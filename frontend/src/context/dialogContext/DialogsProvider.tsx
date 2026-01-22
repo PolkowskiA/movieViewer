@@ -5,45 +5,45 @@ import type { DialogType } from "./types";
 
 export const DialogsProvider: FC<PropsWithChildren> = ({ children }) => {
   const [activeDialog, setActiveDialog] = useState<DialogType>(null);
-  const [selectedItem, setSelectedItem] = useState<MovieDetails | null>(null);
+  const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null);
   const [selectedMovieId, setSelectedMovieId] = useState<number | null>(null);
 
   const openDetails = (item: MovieDetails | number) => {
     if (typeof item === "number") {
       setSelectedMovieId(item);
     } else {
-      setSelectedItem(item);
+      setMovieDetails(item);
     }
     setActiveDialog("details");
   };
 
   const openDelete = (item: MovieDetails) => {
-    setSelectedItem(item);
+    setMovieDetails(item);
     setActiveDialog("delete");
   };
 
   const openEdit = (item: MovieDetails) => {
-    setSelectedItem(item);
+    setMovieDetails(item);
     setActiveDialog("edit");
   };
 
   const close = () => {
     setActiveDialog(null);
-    setSelectedItem(null);
+    setMovieDetails(null);
     setSelectedMovieId(null);
   };
 
   const value = useMemo(() => {
     return {
       activeDialog,
-      selectedItem,
+      movieDetails,
       selectedMovieId,
       openEdit,
       openDelete,
       openDetails,
       close,
     };
-  }, [activeDialog, selectedItem, selectedMovieId]);
+  }, [activeDialog, movieDetails, selectedMovieId]);
 
   return (
     <DialogsContext.Provider value={value}>{children}</DialogsContext.Provider>

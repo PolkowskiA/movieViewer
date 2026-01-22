@@ -9,12 +9,12 @@ export default function DeleteDialog({
 }: Readonly<{
   refresh: () => void;
 }>) {
-  const { activeDialog, close, selectedItem } = useDialogsContext();
+  const { activeDialog, close, movieDetails } = useDialogsContext();
   const open = activeDialog === "delete";
 
   async function handleDelete() {
-    if (selectedItem) {
-      await deleteFavorite(selectedItem.id);
+    if (movieDetails) {
+      await deleteFavorite(movieDetails.id);
       refresh();
     }
 
@@ -30,7 +30,7 @@ export default function DeleteDialog({
               Czy na pewno chcesz usunąć:
             </span>
             <span className="font-semibold underline">
-              {`${selectedItem?.title}?`}
+              {`${movieDetails?.title}?`}
             </span>
           </span>
         </div>

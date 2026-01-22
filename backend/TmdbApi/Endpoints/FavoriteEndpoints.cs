@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TmdbApi.Contracts;
+using TmdbApi.Domain;
 using TmdbApi.DTO;
 using TmdbApi.Infrastructure.Filters;
 using TmdbApi.Infrastructure.Tmdb;
@@ -68,7 +69,7 @@ namespace TmdbApi.Endpoints
                             reviewsByMovieId.TryGetValue(movie.Id, out var review);
                             createdAtByMovieId.TryGetValue(movie.Id, out var createdAt);
 
-                            return new FavoriteMovieDTO(
+                            return new MovieDeatilsDto(
                                 movie.Id,
                                 movie.Title,
                                 movie.OriginalTitle,
@@ -86,9 +87,7 @@ namespace TmdbApi.Endpoints
                                     : new CrewMemberDto(director.Id, director.Name, director.Job),
                                 writers?
                                     .Select(w => new CrewMemberDto(w.Id, w.Name, w.Job))
-                                    .ToArray(),
-                                review,
-                                createdAt
+                                    .ToArray()
                             );
                         });
 

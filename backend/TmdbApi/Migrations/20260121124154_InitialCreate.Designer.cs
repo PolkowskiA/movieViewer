@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TmdbApi.Persistence;
 
 #nullable disable
@@ -11,59 +12,63 @@ using TmdbApi.Persistence;
 namespace TmdbApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260120214553_RemovedReviewTextFromReviews")]
-    partial class RemovedReviewTextFromReviews
+    [Migration("20260121124154_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "8.0.23");
+            modelBuilder
+                .HasAnnotation("ProductVersion", "8.0.23")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            modelBuilder.Entity("TmdbApi.Persistence.FavoriteMovie", b =>
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("TmdbApi.Domain.FavoriteMovie", b =>
                 {
                     b.Property<Guid>("ClientId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("MovieId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("ClientId", "MovieId");
 
                     b.ToTable("Favorites");
                 });
 
-            modelBuilder.Entity("TmdbApi.Persistence.MovieReview", b =>
+            modelBuilder.Entity("TmdbApi.Domain.MovieReview", b =>
                 {
                     b.Property<Guid>("ClientId")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uuid");
 
                     b.Property<int>("MovieId")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("Rating")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("integer");
 
                     b.HasKey("ClientId", "MovieId");
 
                     b.ToTable("Reviews");
                 });
 
-            modelBuilder.Entity("TmdbApi.Persistence.MovieReview", b =>
+            modelBuilder.Entity("TmdbApi.Domain.MovieReview", b =>
                 {
-                    b.HasOne("TmdbApi.Persistence.FavoriteMovie", "Favorite")
+                    b.HasOne("TmdbApi.Domain.FavoriteMovie", "Favorite")
                         .WithOne("Review")
-                        .HasForeignKey("TmdbApi.Persistence.MovieReview", "ClientId", "MovieId")
+                        .HasForeignKey("TmdbApi.Domain.MovieReview", "ClientId", "MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Favorite");
                 });
 
-            modelBuilder.Entity("TmdbApi.Persistence.FavoriteMovie", b =>
+            modelBuilder.Entity("TmdbApi.Domain.FavoriteMovie", b =>
                 {
                     b.Navigation("Review");
                 });
