@@ -23,15 +23,11 @@ export default function DeleteDialog({
 
   return (
     <Dialog isOpen={open} onClose={close} dialogTitle="Usuń z kolekcji">
-      <div className="grid gap-y-10">
-        <div className="">
-          <span className="flex gap-x-1">
-            <span className="whitespace-nowrap">
-              Czy na pewno chcesz usunąć:
-            </span>
-            <span className="font-semibold underline">
-              {`${movieDetails?.title}?`}
-            </span>
+      <div className="flex flex-col gap-y-10">
+        <div className="flex flex-wrap gap-x-1">
+          <span className="whitespace-nowrap">Czy na pewno chcesz usunąć:</span>
+          <span className="font-semibold underline">
+            {`${movieDetails?.title}?`}
           </span>
         </div>
         <div className="flex justify-around">

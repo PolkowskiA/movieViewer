@@ -20,7 +20,7 @@ export function LoadingProvider({ children }: { children: React.ReactNode }) {
       startLoading,
       stopLoading,
     };
-  }, [counter, startLoading, stopLoading]);
+  }, [counter]);
 
   return (
     <LoadingContext.Provider value={value}>{children}</LoadingContext.Provider>
