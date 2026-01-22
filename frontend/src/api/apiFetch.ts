@@ -17,7 +17,7 @@ export class ApiError extends Error {
   }
 }
 
-const API_BASE = import.meta.env.BACKEND_URL ?? "";
+const API_BASE = import.meta.env.VITE_BACKEND_URL ?? "";
 
 export async function apiFetch<TResponse, TBody = unknown>(
   url: string,
