@@ -13,22 +13,6 @@ builder.Services.AddSwaggerGen();
 
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 
-if (cs?.StartsWith("postgres", StringComparison.OrdinalIgnoreCase) == true)
-{
-    var uri = new Uri(cs);
-    var userInfo = uri.UserInfo.Split(':', 2);
-
-    cs =
-        $"Host={uri.Host};" +
-        $"Port={uri.Port};" +
-        $"Database={uri.AbsolutePath.TrimStart('/')};" +
-        $"Username={userInfo[0]};" +
-        $"Password={userInfo[1]}";
-}
-
-Console.WriteLine(cs);
-//postgresql://postgres:ehlsHZZNBaVpherGToEMVMmtnbkfsLwp@postgres.railway.internal:5432/railway
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(cs));
 
