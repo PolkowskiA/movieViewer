@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using System.Net.Http.Headers;
 using TmdbApi.Endpoints;
 using TmdbApi.Infrastructure;
@@ -10,22 +11,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("Default");
+var rawConnectionString =
+    builder.Configuration.GetConnectionString("Default")
+    ?? throw new InvalidOperationException("Connection string not found");
 
-if (string.IsNullOrWhiteSpace(connectionString))
-    throw new InvalidOperationException("Connection string 'Default' not found.");
+if (!builder.Environment.IsDevelopment())
+{
+    rawConnectionString = new NpgsqlConnectionStringBuilder(rawConnectionString)
+    {
+        SslMode = SslMode.Require
+    }.ConnectionString;
+}
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-{
-    options.UseNpgsql(connectionString, npgsql =>
-    {
-        npgsql.EnableRetryOnFailure(
-            maxRetryCount: 5,
-            maxRetryDelay: TimeSpan.FromSeconds(10),
-            errorCodesToAdd: null
-        );
-    });
-});
+    options.UseNpgsql(rawConnectionString)
+);
 
 builder.Services
     .AddAppCors(builder.Configuration)
