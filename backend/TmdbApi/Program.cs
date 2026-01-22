@@ -11,20 +11,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var rawConnectionString =
-    builder.Configuration.GetConnectionString("Default")
-    ?? throw new InvalidOperationException("Connection string not found");
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL")
+    ?? throw new InvalidOperationException("DATABASE_URL not set");
 
-if (!builder.Environment.IsDevelopment())
+var connectionString = new NpgsqlConnectionStringBuilder(databaseUrl)
 {
-    rawConnectionString = new NpgsqlConnectionStringBuilder(rawConnectionString)
-    {
-        SslMode = SslMode.Require
-    }.ConnectionString;
-}
+    SslMode = SslMode.Require
+}.ConnectionString;
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(rawConnectionString)
+    options.UseNpgsql(connectionString)
 );
 
 builder.Services
