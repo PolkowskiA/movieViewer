@@ -26,6 +26,9 @@ if (cs?.StartsWith("postgres", StringComparison.OrdinalIgnoreCase) == true)
         $"Password={userInfo[1]}";
 }
 
+Console.WriteLine(cs);
+//postgresql://postgres:ehlsHZZNBaVpherGToEMVMmtnbkfsLwp@postgres.railway.internal:5432/railway
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(cs));
 
