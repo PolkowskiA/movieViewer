@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using System.Net.Http.Headers;
 using TmdbApi.Endpoints;
 using TmdbApi.Infrastructure;
@@ -10,11 +11,23 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (cs?.StartsWith("postgres", StringComparison.OrdinalIgnoreCase) == true)
 {
-    options.UseNpgsql(
-        builder.Configuration.GetConnectionString("Default"));
-});
+    var uri = new Uri(cs);
+    var userInfo = uri.UserInfo.Split(':', 2);
+
+    cs =
+        $"Host={uri.Host};" +
+        $"Port={uri.Port};" +
+        $"Database={uri.AbsolutePath.TrimStart('/')};" +
+        $"Username={userInfo[0]};" +
+        $"Password={userInfo[1]}";
+}
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(cs));
 
 builder.Services
     .AddAppCors(builder.Configuration)
