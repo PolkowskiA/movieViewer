@@ -26,8 +26,6 @@ if (cs?.StartsWith("postgres", StringComparison.OrdinalIgnoreCase) == true)
         $"Password={userInfo[1]}";
 }
 
-Console.WriteLine($"FIRST CHAR CODE: {(int)cs[0]}");
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(cs));
 
