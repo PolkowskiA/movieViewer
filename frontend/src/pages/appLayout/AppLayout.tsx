@@ -1,11 +1,14 @@
 import { Outlet } from "react-router";
 import movieIcon from "../../assets/movie.svg";
+import { SpinnerOverlay } from "../../components/SpinnerOverlay";
+import { useLoading } from "../../context/loadingContext/useLoading";
 import useInitClient from "../../hooks/useGetClientId";
 import "./AppLayout.css";
 import MovieSearch from "./MovieSearch";
 
 export default function AppLayout() {
   useInitClient();
+  const { isLoading } = useLoading();
 
   return (
     <>
@@ -30,6 +33,7 @@ export default function AppLayout() {
         </div>
       </header>
       <main className="p-4">
+        {isLoading && <SpinnerOverlay />}
         <Outlet />
       </main>
     </>
